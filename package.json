@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "set HTTPS=true&&next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@next/font": "13.0.7",
+    "axios": "^1.2.2",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.7",
+    "fs": "^0.0.1-security",
     "next": "13.0.7",
     "react": "18.2.0",
     "react-dom": "18.2.0"
