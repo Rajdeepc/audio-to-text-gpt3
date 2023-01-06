@@ -1,5 +1,7 @@
 {
-  "name": "getting-started-web-app",
+  "name": "audio-to-text",
+  "author": "Rajdeep Chandra",
+  "github": "https://github.com/Rajdeepc/audio-to-text-gpt3",
   "version": "0.1.0",
   "private": true,
   "scripts": {
