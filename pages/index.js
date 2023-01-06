@@ -17,7 +17,7 @@ export default function Home() {
   const options = {
     displayMode: "inline",
     container: "#inline",
-    maxFiles: 1,
+    maxFiles: 2,
     exposeOriginalFile: true,
     uploadInBackground: false,
     accept: "audio/*",
