@@ -1,25 +1,52 @@
-import { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Head from "next/head"
 import Image from "next/image"
 import styles from "../styles/Home.module.css"
+import WaveSurferNext from "../components/video/WaveSurferNext"
+import * as filestack from "filestack-js"
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+const apikey = process.env.NEXT_PUBLIC_FILESTACK_API
+const client = filestack.init(apikey)
 
 export default function Home() {
   const [prediction, setPrediction] = useState(null)
   const [error, setError] = useState(null)
+  const [audioPath, setAudioFilePath] = useState("")
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const formData = new FormData()
-    formData.append("file", e.target.prompt.value)
+  const options = {
+    displayMode: "inline",
+    container: "#inline",
+    maxFiles: 1,
+    exposeOriginalFile: true,
+    uploadInBackground: false,
+    accept: "audio/*",
+    fromSources: ["local_file_system"],
+    onFileSelected: (res) => {
+      if(res){
+        setAudioFilePath(URL.createObjectURL(res.originalFile))
+        console.log(res)
+      }
+    },
+    onUploadDone: (res) => {
+      console.log(res)
+      setAudioFilePath(
+        URL.createObjectURL(res.filesUploaded?.[0]?.originalFile)
+      )
+      showPredictions(res.filesUploaded?.[0]?.url)
+    },
+  }
+  const picker = client.picker(options)
+  picker.open()
+
+  const showPredictions = async (audioPath) => {
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        audio: "https://replicate.delivery/mgxm/e5159b1b-508a-4be4-b892-e1eb47850bdc/OSR_uk_000_0050_8k.wav",
+        audio: audioPath,
         model: "large",
         transcription: "plain text",
         suppress_tokens: -1,
@@ -55,33 +82,30 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Replicate + Next.js</title>
+        <title>Audio - Text ChatGPT3</title>
       </Head>
+      {audioPath && (
+        <WaveSurferNext extraControls={false} urlFilePath={audioPath} />
+      )}
 
-
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept="audio/*"
-          name="prompt"
-          placeholder="Enter a prompt to display an image"
-        />
-        <button type="submit">Go!</button>
-      </form>
+      <div
+        id="inline"
+        style={{ width: "100%", height: "300px" }}
+      ></div>
 
       {error && <div>{error}</div>}
-
       {prediction && (
         <div>
           {prediction.output && (
-            <div className={styles.imageWrapper}>
-              <Image
-                fill
-                src={prediction.output[prediction.output.length - 1]}
-                alt="output"
-                sizes="100vw"
-              />
-            </div>
+            <>
+              <div className="header">
+                <div className="transcription">Transcription</div>
+                <div>Language: {prediction.output.detected_language}</div>
+              </div>
+              <div className={styles.imageWrapper}>
+                <textarea>{prediction.output.transcription}</textarea>
+              </div>
+            </>
           )}
           <p>status: {prediction.status}</p>
         </div>
