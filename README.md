@@ -4,7 +4,7 @@ A Small Research on Chat GPT 3 openai/whisper Audio to Text Model
 
 Snapshot of the project:
 
-![Image]()
+![Image](https://github.com/Rajdeepc/audio-to-text-gpt3/blob/main/.github/workflows/audio.png?raw=true)
 
 Libraries used:
 [-] wavesurfer.js
